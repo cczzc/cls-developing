@@ -1,0 +1,690 @@
+// firstgameDlg.cpp : 实现文件
+//
+#define _CRT_SECURE_NO_WARNINGS
+#include "stdafx.h"
+#include "firstgame.h"
+#include "firstgameDlg.h"
+#include "afxdialogex.h"
+#include "battlefield.h"
+#include "signal.h"
+#include "string.h"
+#include<string> 
+#include <fstream>
+#include <iostream>
+using namespace std;
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
+CfirstgameApp *p1;
+CMenu menu;      
+HTREEITEM hRoot;
+
+void CfirstgameDlg::settable() {
+
+	string str;
+	CString a, b;
+	int column = 0;
+
+	CString catalog("数据库\\");
+	CString c("\\");
+	catalog = catalog + p1->currentdatabase + c + p1->currenttable;
+	
+	fstream inStream;
+	inStream.open(catalog, ios::in | ios::out);
+	
+	for (int i = 0; i < p1->columnnum; i++) {
+
+		l_1.DeleteColumn(0);
+	}
+	l_1.DeleteAllItems();
+
+	while (!inStream.eof())
+	{
+		str = "";
+		inStream >> str;
+		a = str.c_str();
+
+		int num = 0;
+		int last = 0;
+		int next = 0;
+
+		for (int i = 0; i < a.GetLength(); i++)
+		{
+			if (a.GetAt(i) == p1->signalcontent) {
+
+				next = i;
+
+				if (num == 0) {
+
+					l_1.InsertColumn(column, a.Left(next), LVCFMT_CENTER, 80, column);
+					column++;
+				}
+				else {
+
+					b = a.Right(a.GetLength() - last - 1);
+
+					if (column == 1) {
+
+						l_1.InsertItem(num, b.Left(next - last - 1));
+					}
+					else {
+
+						l_1.SetItemText(num - 1, column - 1, b.Left(next - last - 1));
+					}
+				}
+
+				num++;
+				last = next;
+			}
+		}
+	}
+	
+	p1->columnnum = column;
+	inStream.close();
+}
+
+void CfirstgameDlg::settree() {
+
+	t_1.DeleteAllItems();
+
+	hRoot = t_1.InsertItem(_T("数据库"), 0, 0);
+
+	FILE *inFile;
+	fopen_s(&inFile,"数据库\\tree", "r");
+	CStdioFile cfile(inFile);
+	CString a,b;
+
+	while (!feof(inFile)) {
+
+		cfile.ReadString(a);
+
+		int databasenum = 1;
+		int num = 0;
+		int last = 0;
+		int next = 0;
+		HTREEITEM hDatabase = 0;
+
+		for (int i = 0; i<a.GetLength(); i++)
+		{
+
+			if (a.GetAt(i) == p1->signalcontent) {
+
+				next = i;
+
+				if (num == 0) {
+
+					hDatabase = t_1.InsertItem(a.Left(next), 1, databasenum, hRoot, TVI_LAST);
+					databasenum++;
+				}
+				else {
+
+					b = a.Right(a.GetLength() - last - 1);
+					t_1.InsertItem(b.Left(next - last - 1), 1, num, hDatabase, TVI_LAST);
+				}
+
+				num++;
+				last = next;
+			}
+		}
+	}
+
+	fclose(inFile);
+}
+
+void CfirstgameDlg::edittable() {
+
+}
+
+// 用于应用程序“关于”菜单项的 CAboutDlg 对话框
+
+class CAboutDlg : public CDialogEx
+{
+public:
+	CAboutDlg();
+
+// 对话框数据
+#ifdef AFX_DESIGN_TIME
+	enum { IDD = IDD_ABOUTBOX };
+#endif
+
+	protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
+
+// 实现
+protected:
+	DECLARE_MESSAGE_MAP()
+};
+
+CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
+{
+}
+
+void CAboutDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialogEx::DoDataExchange(pDX);
+}
+
+BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+END_MESSAGE_MAP()
+
+
+// CfirstgameDlg 对话框
+
+
+
+CfirstgameDlg::CfirstgameDlg(CWnd* pParent /*=NULL*/)
+	: CDialogEx(IDD_FIRSTGAME_DIALOG, pParent)
+	, str_1(_T(""))
+	, str_2(_T(""))
+{
+	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+}
+
+void CfirstgameDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_BUTTON5, b_1);
+	DDX_Control(pDX, IDC_TREE1, t_1);
+	DDX_Control(pDX, IDC_LIST2, l_1);
+	DDX_Control(pDX, IDC_EDIT1, m_1);
+	DDX_Control(pDX, IDC_EDIT2, m_2);
+	DDX_Text(pDX, IDC_EDIT1, str_1);
+	DDX_Text(pDX, IDC_EDIT2, str_2);
+}
+
+BEGIN_MESSAGE_MAP(CfirstgameDlg, CDialogEx)
+	ON_WM_SYSCOMMAND()
+	ON_WM_PAINT()
+	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON1, &CfirstgameDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON6, &CfirstgameDlg::OnBnClickedButton6)
+	ON_BN_CLICKED(IDC_BUTTON7, &CfirstgameDlg::OnBnClickedButton7)
+	ON_BN_CLICKED(IDC_BUTTON2, &CfirstgameDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CfirstgameDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON4, &CfirstgameDlg::OnBnClickedButton4)
+	ON_BN_CLICKED(IDC_BUTTON8, &CfirstgameDlg::OnBnClickedButton8)
+	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CfirstgameDlg::OnSelchangedTree1)
+	ON_COMMAND(ID_32783, &CfirstgameDlg::On32783)
+	ON_COMMAND(ID_32784, &CfirstgameDlg::On32784)
+	ON_COMMAND(ID_32787, &CfirstgameDlg::On32787)
+	ON_COMMAND(ID_32788, &CfirstgameDlg::On32788)
+	ON_COMMAND(ID_32790, &CfirstgameDlg::On32790)
+	ON_COMMAND(ID_32791, &CfirstgameDlg::On32791)
+	ON_COMMAND(ID_32792, &CfirstgameDlg::On32792)
+	ON_COMMAND(ID_32775, &CfirstgameDlg::On32775)
+	ON_COMMAND(ID_32776, &CfirstgameDlg::On32776)
+	ON_COMMAND(ID_32777, &CfirstgameDlg::On32777)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST2, &CfirstgameDlg::OnItemchangedList2)
+	ON_COMMAND(ID_32793, &CfirstgameDlg::On32793)
+END_MESSAGE_MAP()
+
+
+// CfirstgameDlg 消息处理程序
+
+BOOL CfirstgameDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// 将“关于...”菜单项添加到系统菜单中。
+
+	// IDM_ABOUTBOX 必须在系统命令范围内。
+	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
+	ASSERT(IDM_ABOUTBOX < 0xF000);
+
+	CMenu* pSysMenu = GetSystemMenu(FALSE);
+	if (pSysMenu != NULL)
+	{
+		BOOL bNameValid;
+		CString strAboutMenu;
+		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
+		ASSERT(bNameValid);
+		if (!strAboutMenu.IsEmpty())
+		{
+			pSysMenu->AppendMenu(MF_SEPARATOR);
+			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+		}
+	}
+
+	// 设置此对话框的图标。  当应用程序主窗口不是对话框时，框架将自动
+	//  执行此操作
+	SetIcon(m_hIcon, TRUE);			// 设置大图标
+	SetIcon(m_hIcon, FALSE);		// 设置小图标
+
+	// TODO: 在此添加额外的初始化代码
+
+	p1 = (CfirstgameApp *)AfxGetApp();
+
+	b_1.EnableWindow(false);
+
+	menu.LoadMenu(IDR_MENU1);
+	SetMenu(&menu);
+
+	settree();
+
+	l_1.SetExtendedStyle(l_1.GetExtendedStyle() | LVS_EX_GRIDLINES);
+
+	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
+}
+
+void CfirstgameDlg::OnSysCommand(UINT nID, LPARAM lParam)
+{
+	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	{
+		CAboutDlg dlgAbout;
+		dlgAbout.DoModal();
+	}
+	else
+	{
+		CDialogEx::OnSysCommand(nID, lParam);
+	}
+}
+
+// 如果向对话框添加最小化按钮，则需要下面的代码
+//  来绘制该图标。  对于使用文档/视图模型的 MFC 应用程序，
+//  这将由框架自动完成。
+
+void CfirstgameDlg::OnPaint()
+{
+	if (IsIconic())
+	{
+		CPaintDC dc(this); // 用于绘制的设备上下文
+
+		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
+
+		// 使图标在工作区矩形中居中
+		int cxIcon = GetSystemMetrics(SM_CXICON);
+		int cyIcon = GetSystemMetrics(SM_CYICON);
+		CRect rect;
+		GetClientRect(&rect);
+		int x = (rect.Width() - cxIcon + 1) / 2;
+		int y = (rect.Height() - cyIcon + 1) / 2;
+
+		// 绘制图标
+		dc.DrawIcon(x, y, m_hIcon);
+	}
+	else
+	{
+		CDialogEx::OnPaint();
+	}
+}
+
+//当用户拖动最小化窗口时系统调用此函数取得光标
+//显示。
+HCURSOR CfirstgameDlg::OnQueryDragIcon()
+{
+	return static_cast<HCURSOR>(m_hIcon);
+}
+
+
+
+void CfirstgameDlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	p1->choice = 2;
+
+	battlefield b;
+	b.DoModal();
+}
+
+
+void CfirstgameDlg::OnBnClickedButton6()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	FILE *inFile;
+	fopen_s(&inFile, "数据库\\tree", "r");
+	CStdioFile cfile(inFile);
+	CString a;
+	BOOL seldatabase = false;
+	
+	UpdateData();
+
+	while (!feof(inFile)) {
+
+		cfile.ReadString(a);
+
+		for (int i = 0; i<a.GetLength(); i++)
+		{
+
+			if (a.GetAt(i) == p1->signalcontent) {
+
+				if (str_1 == a.Left(i)) {
+
+					seldatabase = true;
+				}
+
+				break;
+			}
+		}
+
+		if (seldatabase) {
+		
+			break;
+		}
+	}
+
+	if (seldatabase) {
+
+		p1->currentdatabase = str_1;
+		m_1.SetWindowTextW(p1->currentdatabase);
+	}
+	else {
+
+		m_1.SetWindowTextW(p1->currentdatabase);
+	}
+
+	fclose(inFile);
+}
+
+
+void CfirstgameDlg::OnBnClickedButton7()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	FILE *inFile;
+	fopen_s(&inFile, "数据库\\tree", "r");
+	CStdioFile cfile(inFile);
+	CString a, b;
+	BOOL seldatabase = false;
+	BOOL seltable = false;
+	
+	UpdateData();
+
+	while (!feof(inFile)) {
+
+		cfile.ReadString(a);
+
+		int num = 0;
+		int last = 0;
+		int next = 0;
+
+		for (int i = 0; i < a.GetLength(); i++)
+		{
+
+			if (a.GetAt(i) == p1->signalcontent) {
+
+				next = i;
+				if (num == 0) {
+
+					if (p1->currentdatabase == a.Left(next)) {
+
+						seldatabase = true;
+					} 
+				}
+				else {
+				
+					if (seldatabase) {
+
+						b = a.Right(a.GetLength() - last - 1);
+						if (str_2 == b.Left(next - last - 1)) {
+
+							seltable = true;
+						}
+					}
+				}
+				
+				num++;
+				last = next;
+			}		
+		}
+
+		if (seldatabase) {
+
+			break;
+		}
+	}
+
+	if (seltable) {
+
+		p1->currenttable = str_2;
+		m_2.SetWindowTextW(p1->currenttable);
+
+		settable();
+	}
+	else {
+
+		m_2.SetWindowTextW(p1->currenttable);
+	}
+
+	fclose(inFile);
+}
+
+
+void CfirstgameDlg::OnBnClickedButton2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	p1->choice = 3;
+
+	battlefield b;
+	b.DoModal();
+
+	if (p1->operation == 3) {
+
+		m_1.SetWindowTextW(p1->currenttable);
+		settable();
+	}
+}
+
+
+void CfirstgameDlg::OnBnClickedButton3()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	p1->choice = 4;
+
+	battlefield b;
+	b.DoModal();
+}
+
+
+void CfirstgameDlg::OnBnClickedButton4()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	p1->choice = 5;
+
+	battlefield b;
+	b.DoModal();
+}
+
+
+void CfirstgameDlg::OnBnClickedButton8()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	OnClose();
+	OnCancel();
+	PostNcDestroy();
+}
+
+
+void CfirstgameDlg::OnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	// TODO: 在此添加控件通知处理程序代码
+	*pResult = 0;
+
+	if (t_1.GetRootItem() == t_1.GetParentItem(t_1.GetSelectedItem())) {
+
+		p1->currentdatabase = t_1.GetItemText(t_1.GetSelectedItem());
+		m_1.SetWindowTextW(p1->currentdatabase);
+	}
+	else if(t_1.GetSelectedItem()!= t_1.GetRootItem()){
+	
+		p1->currentdatabase = t_1.GetItemText(t_1.GetParentItem(t_1.GetSelectedItem()));
+		p1->currenttable = t_1.GetItemText(t_1.GetSelectedItem());
+		m_1.SetWindowTextW(p1->currentdatabase);
+		m_2.SetWindowTextW(p1->currenttable);
+
+		settable();
+	}
+}
+
+
+void CfirstgameDlg::On32783()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 0;
+
+	battlefield b;
+	b.DoModal();
+
+	if (p1->operation == 0) {
+
+		settree();
+	}
+}
+
+
+void CfirstgameDlg::On32784()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 1;
+
+	if (p1->currentdatabase == "") {
+
+		p1->operation = 9;
+
+		signal s;
+		s.DoModal();
+	}
+	else {
+
+		battlefield b;
+		b.DoModal();
+
+		if (p1->operation == 1) {
+
+			settree();
+			settable();
+		}
+	}
+}
+
+
+void CfirstgameDlg::On32787()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 3;
+
+	battlefield b;
+	b.DoModal();
+
+	if (p1->operation == 3) {
+
+		settable();
+	}
+}
+
+
+void CfirstgameDlg::On32788()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 4;
+
+	battlefield b;
+	b.DoModal();
+}
+
+
+void CfirstgameDlg::On32790()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 7;
+
+	battlefield b;
+	b.DoModal();
+
+	if (p1->operation == 5) {
+
+		settree();
+	}
+}
+
+
+void CfirstgameDlg::On32791()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 8;
+
+	battlefield b;
+	b.DoModal();
+
+	if (p1->operation == 5) {
+
+		settree();
+	}
+}
+
+
+void CfirstgameDlg::On32792()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 9;
+
+	battlefield b;
+	b.DoModal();
+}
+
+
+void CfirstgameDlg::On32775()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 10;
+
+	battlefield b;
+	b.DoModal();
+}
+
+
+void CfirstgameDlg::On32776()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 6;
+
+	battlefield b;
+	b.DoModal();
+}
+
+
+void CfirstgameDlg::On32777()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->choice = 2;
+
+	battlefield b;
+	b.DoModal();
+}
+
+
+void CfirstgameDlg::OnItemchangedList2(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO: 在此添加控件通知处理程序代码
+	*pResult = 0;
+}
+
+
+void CfirstgameDlg::On32793()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	p1->operation = 14;
+
+	signal s;
+	s.DoModal();
+}
