@@ -1,0 +1,88 @@
+// signal.cpp : 实现文件
+//
+
+#include "stdafx.h"
+#include "firstgame.h"
+#include "signal.h"
+#include "afxdialogex.h"
+#include "battlefield.h"
+
+CfirstgameApp *p3;
+
+// signal 对话框
+
+IMPLEMENT_DYNAMIC(signal, CDialogEx)
+
+signal::signal(CWnd* pParent /*=NULL*/)
+	: CDialogEx(IDD_DIALOG2, pParent)
+{
+
+}
+
+signal::~signal()
+{
+}
+
+void signal::DoDataExchange(CDataExchange* pDX)
+{
+	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_STATIC5, s_5);
+}
+
+
+BEGIN_MESSAGE_MAP(signal, CDialogEx)
+	ON_WM_MOUSEMOVE()
+END_MESSAGE_MAP()
+
+
+// signal 消息处理程序
+
+
+void signal::OnStnClickedStatic4()
+{
+	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+BOOL signal::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+
+	p3 = (CfirstgameApp *)AfxGetApp();
+
+	LPCTSTR lpc[15];
+	lpc[0] = _T("新数据库已创建！");
+	lpc[1] = _T("新表已创建！");
+	lpc[2] = _T("查找成功！");
+	lpc[3] = _T("添加成功！");
+	lpc[4] = _T("修改成功！");
+	lpc[5] = _T("删除成功！");
+	lpc[6] = _T("该数据库已存在！");
+	lpc[7] = _T("新数据库创建失败！");
+	lpc[8] = _T("该表已存在！");
+	lpc[9] = _T("新表创建失败！");
+	lpc[10] = _T("查找失败！");
+	lpc[11] = _T("添加失败！");
+	lpc[12] = _T("修改失败！");
+	lpc[13] = _T("删除失败！");
+	lpc[14] = _T("版本号：1.0");
+
+	s_5.SetWindowTextW(lpc[p3->operation]);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // 异常: OCX 属性页应返回 FALSE
+}
+
+
+void signal::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	CDialogEx::OnMouseMove(nFlags, point);
+
+	OnClose();
+	OnCancel();
+	PostNcDestroy();
+}
