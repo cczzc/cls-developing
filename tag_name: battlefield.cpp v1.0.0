@@ -1,0 +1,857 @@
+// battlefield.cpp : 实现文件
+//
+
+#include "stdafx.h"
+#include "firstgame.h"
+#include "firstgameDlg.h"
+#include "battlefield.h"
+#include "afxdialogex.h"
+#include "signal.h"
+#include "string.h"
+#include<string> 
+#include <fstream>
+#include <iostream>
+using namespace std;
+
+CfirstgameApp *p2;
+//建立树
+void battlefield::writetree() {
+
+	FILE *inFile;
+	fopen_s(&inFile, "数据库\\tree", "r");
+	CStdioFile cfile(inFile);
+	CString a,b;
+	int n = 0;
+	CString *c = new CString[n], *d = new CString[n];
+
+	while (!feof(inFile)) {
+
+	    cfile.ReadString(a);
+
+		n++;
+
+	    if (n % 2 == 1) {
+
+	        c = new CString[n];
+
+	        for (int i = 0; i < n-1;i++) {
+	            c[i] = d[i];
+	        }
+	        c[n - 1] = a;
+
+	        delete[]d;
+	    } else {
+
+	        d = new CString[n];
+
+	        for (int i = 0; i < n - 1; i++) {
+	            d[i] = c[i];
+	        }
+	        d[n - 1] = a;
+
+	        delete[]c;
+	    }
+	}
+
+	fclose(inFile);
+
+	CString ctr;
+	fstream inStream;
+	BOOL deldatabase = false;
+
+	inStream.open("数据库\\tree", ios::out);
+
+	if (n%2 == 1) {
+
+		for (int i = 0; i < n; i++) {
+
+			if (p2->choice == 1) {
+
+				for (int j = 0; j < c[i].GetLength(); j++)
+				{
+
+					if (c[i].GetAt(j) == p2->signalcontent) {
+
+						if (p2->currentdatabase == c[i].Left(j)) {
+
+							c[i] = c[i] + str_2 + _T("#");
+						}
+
+						break;
+					}
+				}
+			}
+			
+			if (p2->choice == 8) {
+
+				b = "";
+				int num = 0;
+				int  last = 0;
+				int  next = 0;
+				for (int j = 0; j < c[i].GetLength(); j++)
+				{
+
+					if (c[i].GetAt(j) == p2->signalcontent) {
+
+						next = j;
+						if (num == 0) {
+							if (p2->currentdatabase == c[i].Left(next)) {
+
+								deldatabase = true;
+								b = b + c[i].Left(next) + _T("#");
+							}
+						}
+						else {
+
+							if (deldatabase) {
+
+								a = c[i].Right(c[i].GetLength() - last - 1);
+								if (a.Left(next - last - 1) != str_2) {
+
+									b = b + a.Left(next - last - 1) + _T("#");
+								}
+							}
+						}
+
+						num++;
+						last = next;
+					}
+				}
+			}
+			if (deldatabase) {
+
+				inStream << CT2A(b) << "\n";
+				deldatabase = false;
+			}
+			else {
+
+				if (p2->choice == 7) {
+
+					for (int j = 0; j < c[i].GetLength(); j++)
+					{
+
+						if (c[i].GetAt(j) == p2->signalcontent) {
+
+							if (c[i].Left(j) != str_1) {
+
+								if (c[i]!=""&&c[i]!="\n") {
+
+									inStream << CT2A(c[i]) << "\n";
+								}
+							}
+
+							break;
+						}
+					}
+				}
+				else {
+
+					if (c[i] != ""&&c[i] != "\n") {
+
+						inStream << CT2A(c[i]) << "\n";
+					}
+				}
+			}
+	    }
+
+	    delete[]c;
+	}
+	else {
+
+	    for (int i = 0; i < n ; i++) {
+
+			if (p2->choice == 1) {
+
+				for (int j = 0; j < d[i].GetLength(); j++)
+				{
+
+					if (d[i].GetAt(j) == p2->signalcontent) {
+
+						if (p2->currentdatabase == d[i].Left(j)) {
+
+							d[i] = d[i] + str_2 + _T("#");
+						}
+
+						break;
+					}
+				}
+			}
+
+			b = "";
+			if (p2->choice == 8) {
+
+				int num = 0;
+				int  last = 0;
+				int  next = 0;
+				for (int j = 0; j < d[i].GetLength(); j++)
+				{
+
+					if (d[i].GetAt(j) == p2->signalcontent) {
+
+						next = j;
+						if (num == 0) {
+							if (p2->currentdatabase == d[i].Left(next)) {
+
+								deldatabase = true;
+								b = b + d[i].Left(next) + _T("#");
+							}
+						}
+						else {
+
+							if (deldatabase) {
+
+								a = d[i].Right(d[i].GetLength() - last - 1);
+								if (a.Left(next - last - 1) != str_2) {
+
+									b = b + a.Left(next - last - 1) + _T("#");
+								}
+							}
+						}	
+
+						num++;
+						last = next;
+					}
+				}
+			}
+			if (deldatabase) {
+
+				inStream << CT2A(b) << "\n";
+				deldatabase = false;
+			}
+			else {
+
+				if (p2->choice == 7) {
+
+					for (int j = 0; j < d[i].GetLength(); j++)
+					{
+
+						if (d[i].GetAt(j) == p2->signalcontent) {
+
+							if (d[i].Left(j) != str_1) {
+
+								if (d[i] != ""&&d[i] != "\n") {
+
+									inStream << CT2A(d[i]) << "\n";
+								}
+							}
+
+							break;
+						}
+					}
+				}
+				else {
+
+					if (d[i] != ""&&d[i] != "\n") {
+
+						inStream << CT2A(d[i]) << "\n";
+					}
+				}
+				
+			}
+	    }
+	    delete[]d;
+	}
+
+	if (p2->choice == 0) {
+
+		inStream << CT2A(str_1) << "#\n";
+	}
+	inStream.close();
+}
+//查询数据
+BOOL  battlefield::selectdata() {
+	CString data[10][20]; //记录所查询表中的所有数据
+	CString readline1; //从文件中得到一行数据
+	CStdioFile cfile;
+
+	//FILE *inFile;
+	//CStdioFile cfile(inFile);
+	CString con;
+	e_2.GetWindowText(con); //得到要查询表名
+	CString tablepath;
+	tablepath = _T("数据库\\") + p2->currentdatabase + _T("\\") + con;
+	if (!cfile.Open(tablepath, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeRead))//没有打开该文件，表名没有该表
+	{ 
+		cfile.Close();
+		return false;
+	}
+	else //打开该数据库，读取所有表信息
+	{    
+		CString database;
+		int danum = 0;//属性数量
+		int	daran = 0;//用户个数
+		cfile.ReadString(readline1);
+		while (readline1 != "") //按行得到文件中的信息，到文件尾就返回false
+		{ 
+			daran = 0;
+			for (int i = 0; i < readline1.GetLength(); i++)
+			{
+				database.AppendChar(readline1.GetAt(i));
+				if (readline1.GetAt(i + 1) == '#') //表示是表名
+				{
+					data[danum][daran++] = database;
+					database.Empty();//清空
+					i++;
+				}
+			}
+			danum++;
+			cfile.ReadString(readline1);
+		}
+		int dai = -1;//所查属性的位置
+		CString con1;
+		e_3.GetWindowText(con1);
+		for (int i = 0; i < danum; i++)
+		{
+			if (data[i][0] == con1)
+			{
+				dai = i; //得到所查属性的位置
+				break;
+			}
+		}
+		if (dai == -1) //没有该属性
+		{
+			cfile.Close();
+			return false;
+		}
+		else 
+		{
+			int usernum = -1;//所查用户的位置
+			CString con2;
+			e_4.GetWindowText(con2);
+			for (int i = 0; i < daran; i++)
+			{
+				if (data[dai][i] == con2) 
+				{
+					usernum = i;
+				}
+			}
+			if (usernum == -1) //该属性没有该内容
+			{ 
+				cfile.Close();
+				return false;
+			}
+			cfile.Close();
+			CString cont=_T("");
+			for (int i = 0; i < danum; i++) {
+				cont += data[i][0] + _T(": ") + data[i][usernum] + _T("   ");
+			}
+			MessageBox(cont);//显示所查询用户的信息
+		}
+	}
+	
+	return true;
+}
+//插入数据
+BOOL  battlefield::insertdata(){
+
+	CString tbname;
+
+	CString catalog("数据库\\");
+	CString c("\\");
+
+	catalog = catalog + p2->currentdatabase + c + str_2;
+
+	CString strDBPath = catalog;
+	UpdateData(TRUE);
+	GetDlgItem(IDC_EDIT2)->GetWindowText(tbname);
+	strDBPath = strDBPath + tbname;
+
+	if (PathFileExists(strDBPath))
+	{
+		CString str;
+		CString sstr;
+		CString strFile;
+		CString strAry;
+
+		int i = 0, j = 0;
+
+		char*delim = ";";
+		char* strary = NULL;
+		char* stra = NULL;
+		GetDlgItem(IDC_EDIT4)->GetWindowText(strAry);
+
+		int len = WideCharToMultiByte(CP_ACP, 0, strAry, -1, NULL, 0, NULL, NULL);
+		strary = new char[len + 1];
+		WideCharToMultiByte(CP_ACP, 0, strAry, -1, strary, len, NULL, NULL);
+		//将CString转化为char*
+
+		stra = strtok(strary, delim);//分割字符串
+									 //sstr.Format("%s", strtok(strary, delim));
+		CStdioFile fFile(strDBPath, CFile::modeRead, NULL);
+
+
+
+		while (fFile.ReadString(strFile))
+		{
+			i++;
+			CString s(stra);
+			str = str + strFile + s + _T("#") + _T("\r\n");
+			if (stra = strtok(NULL, delim))
+			{
+				j++;
+			}
+			//stra = strtok(NULL, delim);
+		}
+		strFile.ReleaseBuffer();
+		fFile.Close();
+		if (i == j + 1)
+		{
+			p2->currenttable = str_2;
+
+			CFile WriteFile;
+			WriteFile.Open(strDBPath, CFile::modeWrite | CFile::modeRead | CFile::modeCreate);
+
+			int len = WideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL);
+			char *WriteBuf = new char[len + 1];
+			WideCharToMultiByte(CP_ACP, 0, str, -1, WriteBuf, len, NULL, NULL);
+
+			//char *WriteBuf = (LPSTR)(LPCSTR)str;
+			WriteFile.Write(WriteBuf, strlen(WriteBuf) + 1);
+
+			WriteFile.Close();
+			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return false;
+}
+//删除数据库
+BOOL battlefield::deletedatabase() {
+
+	UpdateData();
+
+	FILE *inFile;
+	fopen_s(&inFile, "数据库\\tree", "r");
+	CStdioFile cfile(inFile);
+	CString a;
+	BOOL seldatabase = false;
+
+	while (!feof(inFile)) {
+
+		cfile.ReadString(a);
+
+		for (int i = 0; i < a.GetLength(); i++){
+
+			if (a.GetAt(i) == p2->signalcontent) {
+
+				if (str_1 == a.Left(i)) {
+
+					seldatabase = true;
+				}
+
+				break;
+			}
+		}
+
+		if (seldatabase) {
+
+			break;
+		}
+	}
+
+	fclose(inFile);
+
+	if (seldatabase) {
+
+		CString catalog("数据库\\");
+		catalog = catalog + str_1;
+
+		RemoveDirectory(catalog);
+	}
+	return seldatabase;
+}
+//建立数据库
+BOOL battlefield::createdatabase() {
+
+	UpdateData();
+
+	FILE *inFile;
+	fopen_s(&inFile, "数据库\\tree", "r");
+	CStdioFile cfile(inFile);
+	CString a;
+	BOOL seldatabase = true;
+
+	while (!feof(inFile)) {
+
+		cfile.ReadString(a);
+
+		for (int i = 0; i < a.GetLength(); i++) {
+
+			if (a.GetAt(i) == p2->signalcontent) {
+
+				if (str_1 == a.Left(i)) {
+
+					seldatabase = false;
+				}
+
+				break;
+			}
+		}
+
+		if (!seldatabase) {
+
+			break;
+		}
+	}
+
+	fclose(inFile);
+
+	if (seldatabase) {
+
+		CString catalog("数据库\\");
+		catalog = catalog + str_1;
+
+		CreateDirectory(catalog, 0);
+	}
+
+	return seldatabase;
+}
+//删除表
+BOOL battlefield::deletetable() {
+
+	UpdateData();
+
+	FILE *inFile;
+	fopen_s(&inFile, "数据库\\tree", "r");
+	CStdioFile cfile(inFile);
+	CString a, b;
+	BOOL seldatabase = false;
+	BOOL seltable = false;
+
+	while (!feof(inFile)) {
+
+		cfile.ReadString(a);
+
+		int num = 0;
+		int last = 0;
+		int next = 0;
+
+		for (int i = 0; i < a.GetLength(); i++)
+		{
+
+			if (a.GetAt(i) == p2->signalcontent) {
+
+				next = i;
+				if (num == 0) {
+
+					if (p2->currentdatabase == a.Left(next)) {
+
+						seldatabase = true;
+					}
+				}
+				else {
+
+					if (seldatabase) {
+
+						b = a.Right(a.GetLength() - last - 1);
+						if (str_2 == b.Left(next - last - 1)) {
+
+							seltable = true;
+						}
+					}
+				}
+
+				num++;
+				last = next;
+			}
+		}
+
+		seldatabase = false;
+
+		if (seltable) {
+
+			break;
+		}
+	}
+
+	fclose(inFile);
+
+	if (seltable) {
+
+		CString catalog("数据库\\");
+		CString c("\\");
+		catalog = catalog + p2->currentdatabase + c + str_2;
+
+		DeleteFile(catalog);
+	}
+
+	return seltable;
+}
+//创建表
+BOOL battlefield::createtable() {
+
+	UpdateData();
+
+	FILE *inFile;
+	fopen_s(&inFile, "数据库\\tree", "r");
+	CStdioFile cfile(inFile);
+	CString a, b;
+	BOOL seldatabase = false;
+	BOOL seltable = false;
+
+	while (!feof(inFile)) {
+
+		cfile.ReadString(a);
+
+		int num = 0;
+		int last = 0;
+		int next = 0;
+
+		for (int i = 0; i < a.GetLength(); i++)
+		{
+
+			if (a.GetAt(i) == p2->signalcontent) {
+
+				next = i;
+				if (num == 0) {
+
+					if (p2->currentdatabase == a.Left(next)) {
+
+						seldatabase = true;
+					}
+				}
+				else {
+
+					if (seldatabase) {
+
+						b = a.Right(a.GetLength() - last - 1);
+						if (str_2 == b.Left(next - last - 1)) {
+
+							seltable = true;
+						}
+					}
+				}
+
+				num++;
+				last = next;
+			}
+		}
+
+		seldatabase = false;
+
+		if (seltable) {
+
+			break;
+		}
+	}
+
+	fclose(inFile);
+
+	if (seltable) {
+
+		return false;
+	} else {
+
+		CString catalog("数据库\\");
+		CString c("\\");
+
+		p2->currenttable = str_2;
+
+		catalog = catalog + p2->currentdatabase + c + p2->currenttable;
+
+		fstream inStream;
+		inStream.open(catalog,ios::out);
+
+		int num = 0;
+		int last = 0;
+		int next = 0;
+		string str ;
+
+		for (int i = 0; i < str_3.GetLength(); i++) {
+
+			if (str_3.GetAt(i) == p2->signaldivision) {
+
+			    next = i;
+			    if (num == 0) {
+
+			        str = CT2A(str_3.Left(next));
+			        inStream << str << "#\n";
+			    }
+			    else {
+
+			        b = str_3.Right(str_3.GetLength() - last - 1);
+			        str = CT2A(b.Left(next - last - 1));;
+			        inStream << str << "#\n";
+			    }
+
+			    num++;
+			    last = next;
+			}
+		}
+		
+		inStream.close();
+
+		return true;
+	}
+
+	return false;
+}
+
+void battlefield::change() {
+
+	if (p2->choice == 0) {
+
+		if (createdatabase()) {
+
+			p2->operation = 0;
+
+			writetree();
+		}
+		else {
+
+			p2->operation = 7;
+		}
+	}
+	else if (p2->choice == 1) { 
+
+		if (createtable()) {
+
+			p2->operation = 1;
+
+			writetree();
+
+		} else {
+			p2->operation = 8;
+		}
+	}
+	else if (p2->choice == 2) {
+
+		if (selectdata()) {
+
+			p2->operation = 2;
+		}
+		else {
+
+			p2->operation = 10;
+		}
+	}
+	else if (p2->choice == 3) {
+
+		if (insertdata()) {
+
+			p2->operation = 3;
+		}
+		else {
+
+			p2->operation = 11;
+		}
+	}
+	else if (p2->choice == 7) {
+
+		if (deletedatabase()) {
+
+			p2->operation = 5;
+
+			writetree();
+		}
+		else {
+
+			p2->operation = 13;
+		}
+	}
+	else if (p2->choice == 8) {
+
+		if (deletetable()) {
+
+			p2->operation = 5;
+
+			writetree();
+		}
+		else {
+
+			p2->operation = 13;
+		}
+	}
+}
+
+// battlefield 对话框
+
+IMPLEMENT_DYNAMIC(battlefield, CDialogEx)
+
+battlefield::battlefield(CWnd* pParent /*=NULL*/)
+	: CDialogEx(IDD_DIALOG1, pParent)
+	, str_1(_T(""))
+	, str_2(_T(""))
+	, str_3(_T(""))
+	, str_4(_T(""))
+{
+
+}
+
+battlefield::~battlefield()
+{
+}
+
+void battlefield::DoDataExchange(CDataExchange* pDX)
+{
+	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT1, e_1);
+	DDX_Control(pDX, IDC_EDIT2, e_2);
+	DDX_Control(pDX, IDC_EDIT3, e_3);
+	DDX_Control(pDX, IDC_EDIT4, e_4);
+	DDX_Control(pDX, IDC_STATIC1, s_1);
+	DDX_Control(pDX, IDC_STATIC2, s_2);
+	DDX_Control(pDX, IDC_STATIC3, s_3);
+	DDX_Control(pDX, IDC_STATIC4, s_4);
+	DDX_Text(pDX, IDC_EDIT1, str_1);
+	DDX_Text(pDX, IDC_EDIT2, str_2);
+	DDX_Text(pDX, IDC_EDIT3, str_3);
+	DDX_Text(pDX, IDC_EDIT4, str_4);
+}
+
+
+BEGIN_MESSAGE_MAP(battlefield, CDialogEx)
+	ON_BN_CLICKED(IDC_BUTTON2, &battlefield::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON1, &battlefield::OnBnClickedButton1)
+	ON_WM_CHANGEUISTATE()
+END_MESSAGE_MAP()
+
+
+// battlefield 消息处理程序
+BOOL battlefield::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+
+	p2 = (CfirstgameApp *)AfxGetApp();
+
+	if (p2->choice == 0 || p2->choice == 7 || p2->choice == 10) { s_2.ShowWindow(false); e_2.ShowWindow(false); s_3.ShowWindow(false); e_3.ShowWindow(false); s_4.ShowWindow(false); e_4.ShowWindow(false); }
+	else if (p2->choice == 1) { s_1.ShowWindow(false); e_1.ShowWindow(false); s_4.ShowWindow(false); e_4.ShowWindow(false); }
+	else if (p2->choice == 2|| p2->choice == 9) { s_1.ShowWindow(false); e_1.ShowWindow(false); }
+	else if (p2->choice == 3) { s_1.ShowWindow(false); e_1.ShowWindow(false); }
+	else if (p2->choice == 4) { s_1.ShowWindow(false); e_1.ShowWindow(false); }
+	else if (p2->choice == 5) { s_1.ShowWindow(false); e_1.ShowWindow(false); }
+	else if (p2->choice == 6|| p2->choice == 8) { s_1.ShowWindow(false); e_1.ShowWindow(false); s_3.ShowWindow(false); e_3.ShowWindow(false); s_4.ShowWindow(false); e_4.ShowWindow(false);
+	}
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // 异常: OCX 属性页应返回 FALSE
+}
+
+void battlefield::OnBnClickedButton2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	OnClose();
+	OnCancel();
+	PostNcDestroy();
+}
+
+void battlefield::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	OnClose();
+	OnCancel();
+	PostNcDestroy();
+
+	change();
+
+	signal s;
+	s.DoModal();
+}
