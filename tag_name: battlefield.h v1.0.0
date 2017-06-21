@@ -1,0 +1,49 @@
+#pragma once
+#define _CRT_SECURE_NO_WARNINGS
+#include "afxwin.h"
+
+
+// battlefield 对话框
+
+class battlefield : public CDialogEx
+{
+	DECLARE_DYNAMIC(battlefield)
+
+public:
+	battlefield(CWnd* pParent = NULL);   // 标准构造函数
+	virtual ~battlefield();
+
+// 对话框数据
+#ifdef AFX_DESIGN_TIME
+	enum { IDD = IDD_DIALOG1 };
+#endif
+
+protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
+
+	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton1();
+	virtual BOOL OnInitDialog();
+	CEdit e_1;
+	CEdit e_2;
+	CEdit e_3;
+	CEdit e_4;
+	CStatic s_1;
+	CStatic s_2;
+	CStatic s_3;
+	CStatic s_4;
+	CString str_1;
+	CString str_2;
+	CString str_3;
+	CString str_4;
+	void change();
+	BOOL createtable();
+	BOOL deletetable();
+	BOOL createdatabase();
+	BOOL deletedatabase();
+	BOOL insertdata();
+	BOOL selectdata();
+	void writetree();
+};
