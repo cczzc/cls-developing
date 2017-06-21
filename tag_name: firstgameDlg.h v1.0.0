@@ -1,0 +1,67 @@
+// firstgameDlg.h : 头文件
+//
+
+#pragma once
+#define _CRT_SECURE_NO_WARNINGS
+#include "afxwin.h"
+#include "afxcmn.h"
+
+
+// CfirstgameDlg 对话框
+class CfirstgameDlg : public CDialogEx
+{
+// 构造
+public:
+	CfirstgameDlg(CWnd* pParent = NULL);	// 标准构造函数
+
+// 对话框数据
+#ifdef AFX_DESIGN_TIME
+	enum { IDD = IDD_FIRSTGAME_DIALOG };
+#endif
+
+	protected:
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
+
+
+// 实现
+protected:
+	HICON m_hIcon;
+
+	// 生成的消息映射函数
+	virtual BOOL OnInitDialog();
+	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnPaint();
+	afx_msg HCURSOR OnQueryDragIcon();
+	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton6();
+	afx_msg void OnBnClickedButton7();
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
+	afx_msg void OnBnClickedButton4();
+	afx_msg void OnBnClickedButton8();
+	CButton b_1;
+	afx_msg void OnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void On32783();
+	CTreeCtrl t_1;
+	afx_msg void On32784();
+	afx_msg void On32787();
+	afx_msg void On32788();
+	afx_msg void On32790();
+	afx_msg void On32791();
+	afx_msg void On32792();
+	CListCtrl l_1;
+	void settable();
+	void settree();
+	void edittable();
+	afx_msg void On32775();
+	afx_msg void On32776();
+	afx_msg void On32777();
+	CEdit m_1;
+	CEdit m_2;
+	CString str_1;
+	CString str_2;
+	afx_msg void OnItemchangedList2(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void On32793();
+};
